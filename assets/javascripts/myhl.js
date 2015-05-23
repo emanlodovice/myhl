@@ -3,7 +3,7 @@ var editor = {
     line_numbers: $('.line-numbers'),
     current_line: $('.current-line'),
     initialize: function() {
-        editor.textarea.on('keydown keyup', function() {
+        editor.textarea.on('input keydown keyup', function() {
             editor.update_line_numbers();
             editor.highlight_line();
         });
