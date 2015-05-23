@@ -20,7 +20,6 @@ var editor = {
         var contents = editor.textarea.val();
         var line = contents.substring(0, editor.textarea[0].selectionStart)
             .split(/\r?\n/g).length;
-
         editor.line_numbers.find('span[data-line="' + line + '"]')
             .addClass('current');
 
