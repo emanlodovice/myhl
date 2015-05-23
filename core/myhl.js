@@ -1,5 +1,6 @@
 keyword_table = {
     data_types: ['word', 'number'],
+    program_statements: ['print', 'read']
 }
 
 compile = function(lines) {
@@ -45,8 +46,78 @@ compile = function(lines) {
         }
     }
 
+
+    parse_statement = function(line) {
+        var result = null;
+        if (is_read_statement(line)) {
+            result = read_statement(line);
+        } else if (is_print_statement(line)) {
+            result = print_statement(line);
+        } else if (is_assignment_statement(line)){
+            result = 'assignment';
+        } else {
+            throw new Error('Invalid statement!');
+        }
+        return result;
+
+        function is_read_statement(line) {
+            if (line.indexOf('read') !== -1) {
+                return true;
+            }
+            return false;
+        }
+
+        function is_print_statement(line) {
+            if (line.indexOf('print') !== -1) {
+                return true;
+            }
+            return false;
+        }
+
+        function is_assignment_statement(line) {
+            if (line.indexOf('=') !== -1) {
+                var iden = line.split('=')[0].trim();
+                if (variable_table.hasOwnProperty(iden)) {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+
+        function read_statement(line) {
+            statement = line.split(' ');
+            if (statement.length === 2 && statement[0] === 'read') {
+                var iden = statement[1]
+                if (variable_table.hasOwnProperty(iden)) {
+                    return {'type': 'read', 'identifier': iden}
+                } else {
+                    throw new Error('Invalid statement: ' + line);
+                }
+            } else {
+                throw new Error('Invalid statement: ' + line);
+            }
+        }
+
+        function print_statement(line) {
+            statement = line.split(' ');
+            if (statement.length === 2 && statement[0] === 'print') {
+                var iden = statement[1]
+                if (variable_table.hasOwnProperty(iden)) {
+                    return {'type': 'print', 'identifier': iden}
+                } else {
+                    throw new Error('Invalid statement: ' + line);
+                }
+            } else {
+                throw new Error('Invalid statement: ' + line);
+            }
+        }
+    }
+
+
     var status = null;
     var has_statement_block = false;
+    var compiled = [];
     for (var i in lines) {
         var line = lines[i];
         if (status === null) {
@@ -70,6 +141,10 @@ compile = function(lines) {
             }   else {
                 if (status === 'vars') {
                     parse_declaration(line);
+                } else if (status === 'statements') {
+                    compiled.push(parse_statement(line));
+                } else {
+                    throw new Error('Invalid statement!');
                 }
             }
         }
@@ -78,5 +153,5 @@ compile = function(lines) {
     if (status != null) {
         throw new Error('Block not closed!');
     }
-    return {variable_table: variable_table}
+    return {variable_table: variable_table, compiled: compiled};
 }
