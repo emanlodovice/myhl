@@ -22,7 +22,7 @@ var editor = {
                     hljs.C_NUMBER_MODE
                 ]
             };
-        });23
+        });
 
         editor.textarea.on('input keydown keyup', function() {
             editor.update_line_numbers();
@@ -55,4 +55,3 @@ var editor = {
 };
 
 editor.initialize();
-12
