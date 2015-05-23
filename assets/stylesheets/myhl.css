@@ -1,0 +1,109 @@
+*,
+*:before,
+*:after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+html {
+    height: 100%;
+    font-size: 62.5%;
+}
+
+
+body {
+    height: 100%;
+    font-family: "Consolas", monospace;
+    color: #333;
+    background-color: #1d1f21;
+    -webkit-user-select: none;
+}
+
+
+nav {
+    display: flex;
+    padding: 0 0.5rem;
+    background-color: #c5c8c6;
+}
+
+
+nav a {
+    font-size: 1.2rem;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #1d1f21;
+    padding: 0.4rem 0.5rem 0.2rem 0.5rem;
+    outline: none;
+}
+
+
+nav a:hover,
+nav a:focus {
+    color: #eee;
+    background-color: #009688;
+}
+
+
+input[type="file"] {
+    position: absolute;
+    left: -100rem;
+}
+
+
+main {
+    position: relative;
+    display: flex;
+    height: calc(100% - 2rem);
+    overflow: hidden;
+}
+
+
+main textarea {
+    width: 100%;
+    padding: 1rem;
+    font: normal 1.6rem/1.6rem "Consolas", monospace;
+    color: #eee;
+    background-color: transparent;
+    margin-left: 4rem;
+    border: none;
+    resize: none;
+    outline: none;
+}
+
+
+.line-numbers {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4rem;
+    padding: 1rem 0;
+    background-color: #0d1011;
+}
+
+
+.line-numbers span {
+    display: block;
+    font-size: 1.6rem;
+    line-height: 1;
+    text-align: right;
+    color: #686b6b;
+    padding-right: 1rem;
+}
+
+.line-numbers span.current {
+    background-color: #101112;
+}
+
+
+.current-line {
+    position: absolute;
+    top: 1rem;
+    left: 4rem;
+    right: 0;
+    z-index: -1;
+    height: 1.6rem;
+    background-color: #101112;
+}
