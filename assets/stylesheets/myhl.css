@@ -95,3 +95,14 @@ main textarea {
 .line-numbers span.current {
     background-color: #101112;
 }
+
+
+.current-line {
+    position: absolute;
+    top: 1rem;
+    left: 4rem;
+    right: 0;
+    z-index: -1;
+    height: 1.6rem;
+    background-color: #101112;
+}
