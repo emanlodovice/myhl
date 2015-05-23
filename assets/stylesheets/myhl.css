@@ -70,6 +70,17 @@ main textarea {
     border: none;
     resize: none;
     outline: none;
+    -webkit-text-fill-color: transparent;
+}
+
+
+main pre {
+    position: absolute;
+    top: 0;
+    left: 4rem;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
 }
 
 
@@ -106,4 +117,44 @@ main textarea {
     z-index: -1;
     height: 1.6rem;
     background-color: #101112;
+}
+
+
+
+
+
+/** VENDOR OVERRIDES **/
+.hljs {
+    font-family: "Consolas", monospace;
+    font-size: 1.3rem;
+    line-height: 1;
+    color: #eee;
+    background-color: transparent;
+    padding: 1rem;
+}
+
+
+.hljs-keyword {
+    font-weight: normal;
+    color: #33b5db;
+}
+
+.hljs-subkeyword {
+    color: #a074c4;
+}
+
+.hljs-number {
+    color: #cd3f45;
+}
+
+.hljs-operator {
+    color: #9fca56;
+}
+
+.hljs-comment {
+    color: #4a5f68;
+}
+
+.hljs-string {
+    color: #ffb454;
 }
