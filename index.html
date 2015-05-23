@@ -8,6 +8,22 @@
     </head>
 
     <body>
+        <nav>
+            <a href="#" data-action="file">File</a>
+            <a href="#" data-action="translate">Translate</a>
+            <a href="#" data-action="trace">Trace</a>
+            <a href="#" data-action="execute">Execute</a>
+        </nav>
+        <input type="file">
+
+        <main>
+            <div class="line-numbers">
+                <span data-line="1" class="current">1</span>
+            </div>
+            <p class="current-line"></p>
+
+            <textarea name="editor" autofocus></textarea>
+        </main>
 
         <script src="assets/vendor/jquery/jquery.js"></script>
         <script src="assets/vendor/highlightjs/highlightjs.min.js"></script>
