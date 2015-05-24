@@ -180,3 +180,37 @@ compile = function(lines) {
     }
     return {variable_table: variable_table, compiled: compiled};
 }
+
+execute = function(compiled) {
+    var variables = compiled.variable_table;
+    var lines = compiled.compiled;
+    for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+
+        if (line.type === 'read') {
+            execute_read(variables[line.identifier]);
+        } else if (line.type === 'print') {
+            execute_print(variables[line.identifier]);
+        } else {
+            // execute_assignment
+        }
+    }
+
+    function execute_read(variable) {
+        var input = prompt('Input ' + variable.type + ':'); // change prompt here!
+        if (variable.type === 'number') {
+            if (!isNaN(input) && input.length > 0) {
+                variable.value = +input;
+            } else {
+                throw new Error('Type Error: Expected number instead of "' + input + '"');
+            }
+        } else {
+            variable.value = input;
+        }
+    }
+
+    function execute_print(variable) {
+        var to_print = (variable.type === 'number') ? variable.value : "\"" + variable.value + "\"";
+        alert(to_print);    // change alert here!
+    }
+}
