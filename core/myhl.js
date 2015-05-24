@@ -54,7 +54,7 @@ compile = function(lines) {
             result = read_statement(line);
         } else if (is_print_statement(line)) {
             result = print_statement(line);
-        } else if (is_assignment_statement(line)){
+        } else if (is_assignment_statement(line)) {
             result = assignment_statement(line);
         } else {
             throw new Error('Invalid statement! ' + line);
@@ -201,12 +201,12 @@ execute = function(compiled) {
         } else if (line.type === 'print') {
             execute_print(variables[line.identifier]);
         } else {
-            // execute_assignment
+            execute_assignment(line);
         }
     }
 
     function execute_read(variable) {
-        var input = prompt('Input ' + variable.type + ':'); // change prompt here!
+        var input = prompt('Input ' + variable.type + ':');                     // change prompt here!
         if (variable.type === 'number') {
             if (!isNaN(input) && input.length > 0) {
                 variable.value = +input;
@@ -220,7 +220,32 @@ execute = function(compiled) {
 
     function execute_print(variable) {
         var to_print = (variable.type === 'number') ? variable.value : "\"" + variable.value + "\"";
-        alert(to_print);    // change alert here!
+        alert(to_print);                                                        // change alert here!
+    }
+
+    function execute_assignment(line) {
+        var variable = variables[line.identifier];
+        var statement = line.statement;
+
+        if (variable.type === 'word') {
+            if (is_word(statement)) {
+                variable.value = statement;
+            } else if (is_identifier(statement)) {
+                variable.value = variables[statement];
+            } else {
+                throw new Error('Type Error: Expected word value');
+            }
+        } else {
+            // tokenize expression
+        }
+    }
+
+    function is_word(line) {
+        return line[0] === '"' && line[line.length-1] === '"';
+    }
+
+    function is_identifier(identifier) {
+        return variables.hasOwnProperty(identifier);
     }
 }
 
@@ -344,3 +369,8 @@ Expression = function(expression, variable_table) {
         return false;
     }
 }
+
+var lines = ['begin vars', 'a use as number', 'b use as word', 'end vars', 
+'begin statements', 'a = 1 + 2', 'print a', 'end statements'];
+var c = compile(lines);
+execute(c);
