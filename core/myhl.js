@@ -173,6 +173,11 @@ compile = function(lines) {
             if ((line == 'end vars' && status === 'vars') || (line == 'end statements' && status === 'statements')) {
                 status = null;
             }   else {
+                var last_char = line.charAt(line.length - 1);
+                if (last_char != ';') {
+                    throw new Error('Statements should end with \';\'');
+                }
+                line = line.substring(0, line.length - 1);
                 if (status === 'vars') {
                     parse_declaration(line);
                 } else if (status === 'statements') {
