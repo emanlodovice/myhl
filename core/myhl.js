@@ -85,6 +85,17 @@ compile = function(lines) {
             return false;
         }
 
+        function is_identifier(line) {
+            if (variable_table.hasOwnProperty(line)) {
+                return true;
+            }
+            return false;
+        }
+
+        // function is_word(line) {
+
+        // }
+
         function read_statement(line) {
             statement = line.split(' ');
             if (statement.length === 2 && statement[0] === 'read') {
@@ -111,6 +122,20 @@ compile = function(lines) {
             } else {
                 throw new Error('Invalid statement: ' + line);
             }
+        }
+
+        function assignment_statement(line) {
+            statement = line.split('=');
+            var iden = statement[0].trim();
+            var expression = statement[1].trim();
+            var result = expression_statement(expression);
+        }
+
+        function expression_statement(expression) {
+            if (is_word(expression) || is_identifier(expression) || is_number_expression(expression)) {
+                return expression;
+            }
+            return new Error('Invalid expression: ' + expression);
         }
     }
 
