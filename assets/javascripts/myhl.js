@@ -103,6 +103,19 @@ var actions = {
                 actions.execute();
             }
         });
+
+        $(document).on('keydown', function(e) {
+            if (e.keyCode === 79 && e.ctrlKey) {
+                e.preventDefault();
+                actions.open_file();
+            } else if (e.keyCode === 50 && e.ctrlKey) {
+                e.preventDefault();
+                actions.compile();
+            } else if (e.keyCode === 51 && e.ctrlKey) {
+                e.preventDefault();
+                actions.execute();
+            }
+        });
     },
     open_file: function() {
         actions.file.trigger('click');
@@ -159,6 +172,7 @@ var konsole = {
     close: function() {
         konsole.container.addClass('hidden');
         editor.textarea.removeClass('collapsed');
+        editor.textarea.trigger('focus');
         return konsole;
     },
     clear: function() {
