@@ -238,6 +238,8 @@ var konsole = {
             .trigger('focus');
         konsole.input.off('keydown').on('keydown', function(e) {
             if (e.keyCode === 13) {
+                var message = konsole.promptdom.text() + ' ' + this.value;
+                konsole.log(message, 'input');
                 $(document).trigger({
                     type: 'consoleinput',
                     value: konsole.input.val()
