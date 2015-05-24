@@ -5,7 +5,6 @@ var editor = {
     highlighted: $('pre code'),
     initialize: function() {
         hljs.registerLanguage('myhl', function(hljs) {
-            console.log(hljs);
             return {
                 keywords: 'var use as read print begin end',
                 contains: [
@@ -29,6 +28,13 @@ var editor = {
             editor.highlight_line();
             editor.highlight_code();
         });
+
+        editor.textarea.on('mousedown mouseup', editor.highlight_line);
+
+        editor.textarea.on('scroll', function(e) {
+            editor.line_numbers.offset({ top: -e.target.scrollTop + 20 });
+            editor.highlighted.parent().offset({ top: -e.target.scrollTop + 20 });
+        });
     },
     update_line_numbers: function() {
         editor.line_numbers.empty();
@@ -42,6 +48,7 @@ var editor = {
         var contents = editor.textarea.val();
         var line = contents.substring(0, editor.textarea[0].selectionStart)
             .split(/\r?\n/g).length;
+        editor.line_numbers.find('span').removeClass('current');
         editor.line_numbers.find('span[data-line="' + line + '"]')
             .addClass('current');
 
