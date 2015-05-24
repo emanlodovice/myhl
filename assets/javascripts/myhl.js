@@ -14,7 +14,7 @@ var editor = {
                     },
                     {
                         className: 'operator',
-                        begin: /[+*%=-]|([^\/]\/(?!\/))/
+                        begin: /[+*%=-]|(\/(?!\/))/
                     },
                     hljs.QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
