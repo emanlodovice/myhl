@@ -37,8 +37,8 @@ var editor = {
         editor.textarea.on('mousedown mouseup', editor.highlight_line);
 
         editor.textarea.on('scroll', function(e) {
-            editor.line_numbers.offset({ top: -e.target.scrollTop + 20 });
-            editor.highlighted.parent().offset({ top: -e.target.scrollTop + 20 });
+            editor.highlighted.parent().add(editor.line_numbers)
+                .offset({ top: -e.target.scrollTop + 20 });
         });
     },
     insert_tab: function() {
@@ -75,7 +75,49 @@ var editor = {
     highlight_code: function() {
         editor.highlighted.text(editor.textarea.val());
         hljs.highlightBlock(editor.highlighted[0]);
+    },
+    update_content: function(content) {
+        editor.textarea.text(content);
+        editor.textarea.trigger('input');
     }
 };
 
+
+var actions = {
+    container: $('nav'),
+    file: $('input[type="file"]'),
+    initialize: function() {
+        actions.container.on('click', 'a[data-action]', function(e) {
+            e.preventDefault();
+            var target = $(this);
+            if (target.data('action') === 'file') {
+                actions.open_file();
+            } else if (target.data('action') === 'compile') {
+                actions.compile();
+            } else if (target.data('action') === 'execute') {
+                actions.execute();
+            }
+        });
+    },
+    open_file: function() {
+        actions.file.trigger('click');
+        actions.file.off('change').on('change', function() {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                editor.update_content(e.target.result);
+            }
+            reader.readAsText(this.files[0])
+        });
+    },
+    compile: function() {
+
+    },
+    execute: function() {
+
+    }
+};
+
+
+
 editor.initialize();
+actions.initialize();
