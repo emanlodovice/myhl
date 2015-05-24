@@ -29,7 +29,7 @@ compile = function(lines) {
                 throw new Error('Invalid identifier: ' + iden);
             }
             if (variable_table.hasOwnProperty(iden)) {
-                throw new Error('Identifier was declared more than ones: ' + iden);
+                throw new Error('Identifier was declared more than once: ' + iden);
             }
 
             variable_table[iden] = {
