@@ -136,6 +136,13 @@ var konsole = {
     container: $('.console'),
     logs: $('.console .logs'),
     template: '<p class="#{type}">#{message}</p>',
+    initialize: function() {
+        konsole.input.on('keydown', function(e) {
+            if (e.keyCode === 27) {
+                konsole.close().clear();
+            }
+        });
+    },
     open: function() {
         konsole.container.removeClass('hidden');
         setTimeout(function() {
@@ -149,6 +156,7 @@ var konsole = {
     },
     clear: function() {
         konsole.logs.empty();
+        konsole.input.val('');
         return konsole;
     },
     log: function(message, type) {
@@ -169,3 +177,4 @@ var konsole = {
 
 editor.initialize();
 actions.initialize();
+konsole.initialize();
