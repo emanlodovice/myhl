@@ -57,7 +57,7 @@ compile = function(lines) {
         } else if (is_assignment_statement(line)){
             result = assignment_statement(line);
         } else {
-            throw new Error('Invalid statement!');
+            throw new Error('Invalid statement! ' + line);
         }
         return result;
 
@@ -141,7 +141,7 @@ compile = function(lines) {
         }
 
         function expression_statement(expression) {
-            if (is_word(expression) || is_identifier(expression) || Expression(expression)) {
+            if (is_word(expression) || is_identifier(expression) || Expression(expression, variable_table)) {
                 return expression;
             }
             return new Error('Invalid expression: ' + expression);
@@ -224,7 +224,7 @@ execute = function(compiled) {
     }
 }
 
-Expression = function(expression) {
+Expression = function(expression, variable_table) {
     var tokens = tokenizer(expression);
     var current = null;
     console.log(tokens);
@@ -246,6 +246,18 @@ Expression = function(expression) {
         }
     }
     tokens.push(end);
+
+    // check if non-number operands are declared identifiers
+    for (var i = 0; i < tokens.length; i++) {
+        var curr = tokens[i];
+        var regex = /^\d+$/;
+        if (curr.type === 'Operand' && !regex.test(curr.value)) {
+            if (!variable_table.hasOwnProperty(curr.value)) {
+                throw new Error('Undeclared variable: ' + curr.value);
+            }
+        }
+    }
+
     current = tokens[0];
     return recognizer();
 
