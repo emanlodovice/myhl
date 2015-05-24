@@ -92,9 +92,9 @@ compile = function(lines) {
             return false;
         }
 
-        // function is_word(line) {
-
-        // }
+        function is_word(line) {
+            return true;
+        }
 
         function read_statement(line) {
             statement = line.split(' ');
@@ -132,13 +132,121 @@ compile = function(lines) {
         }
 
         function expression_statement(expression) {
-            if (is_word(expression) || is_identifier(expression) || is_number_expression(expression)) {
+            if (is_word(expression) || is_identifier(expression) || Expression(expression)) {
                 return expression;
             }
             return new Error('Invalid expression: ' + expression);
         }
     }
 
+    Expression = function(expression) {
+        var tokens = tokenizer(expression);
+        var current = null;
+        console.log(tokens);
+        for (var i = 0; i < tokens.length; i++) {
+            var token = tokens[i];
+            // check if operand values are valid
+            if (token.type === 'Operand' && !is_parens(token.value)) {
+                var regex = /^([a-zA-Z_]\w*|\d+)$/;
+                if (!regex.test(token.value)) {
+                    throw new Error('Invalid expression: ' + expression);
+                }
+            }
+            // sets 'next' of each token to the next token
+            if (i < tokens.length - 1) {
+                token.next = tokens[i+1];
+            } else {
+                var end = {'type': 'End', 'value': 'end'};
+                token.next = end;
+            }
+        }
+        tokens.push(end);
+        current = tokens[0];
+        return recognizer();
+
+        function recognizer() {
+            expression_recog();
+            check_token(current, 'end');
+            return true;
+        }
+
+        function expression_recog() {
+            operand_recog();
+            // while the current token is an operator
+            while (current.type === 'Operator' && !is_parens(current)) {
+                consume();
+                operand_recog();
+            }
+            return;
+        }
+
+        function operand_recog() {
+            if (current.type === 'Operand' && !is_parens(current.value)) {
+                consume();
+            } else if (current.value === '(') {
+                consume();
+                expression_recog();
+                check_token(current, ')');
+            } else {
+                throw new Error('Invalid expression: ' + expression);
+            }
+            return;
+        }
+
+        function check_token(token, value) {
+            if (token.value === value) {
+                consume();
+            } else {
+                throw new Error('Invalid expression: ' + expression + current.value);
+            }
+            return;
+        }
+
+        function consume() {
+            if (current.value !== 'end') {
+                current = current.next;
+            }
+        }
+
+        function tokenizer(expression) {
+            var operators = ['^', '*', '/', '%', '+', '-'];
+            var tokens = [];
+            var operand = '';
+            
+            for (var i = 0; i < expression.length; i++) {
+                var curr = expression[i];
+                if (curr !== ' ') {
+                    // current character is an operator
+                    if (operators.indexOf(curr) !== -1) {
+                        if (operand !== '') {
+                            tokens.push({'type': 'Operand', 'value': operand});
+                            operand = '';
+                        }
+                        tokens.push({'type': 'Operator', 'value': curr});
+                    } else if (curr === '(' || curr === ')') {
+                        if (operand !== '') {
+                            tokens.push({'type': 'Operand', 'value': operand});
+                            operand = '';
+                        }
+                        tokens.push({'type': 'Operand', 'value': curr});
+                    } else {
+                        operand += curr;
+                    }
+                }
+            }
+            if (operand !== '') {
+                tokens.push({'type': 'Operand', 'value': operand});
+            }
+            return tokens;
+        }
+
+        function is_parens(input) {
+            if (input === '(' || input === ')') {
+                return true;
+            }
+            return false;
+        }
+    }
 
     var status = null;
     var has_statement_block = false;
