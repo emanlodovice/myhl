@@ -118,6 +118,25 @@ var actions = {
 };
 
 
+var konsole = {
+    input: $('.console input[type="text"]'),
+    logs: $('.console .logs'),
+    template: '<p class="#{type}">#{message}</p>',
+    log: function(message, type) {
+        type = type || '';
+        var log = konsole.template.replace(/#\{message\}/g, message)
+            .replace(/#\{type\}/, type);
+        konsole.logs.append(log)[0].scrollTop = konsole.logs[0].scrollHeight;
+    },
+    info: function(message) {
+        konsole.log(message, 'info');
+    },
+    error: function(message) {
+        konsole.log(message, 'error');
+    }
+};
+
+
 
 editor.initialize();
 actions.initialize();

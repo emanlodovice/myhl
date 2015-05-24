@@ -41,7 +41,7 @@ compile = function(lines) {
             if (name.length === 0) {
                 return false;
             }
-            if (''+name.charAt(0).match(/[a-z]|[A-Z]|_/) == null) {
+            if (name.charAt(0).match(/[a-z]|[A-Z]|_/i) === null) {
                 return false;
             }
             return name.match(/[a-z]|[A-Z]|[0-9]|_/g).length === name.length;
