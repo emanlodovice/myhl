@@ -82,7 +82,7 @@ var editor = {
         hljs.highlightBlock(editor.highlighted[0]);
     },
     update_content: function(content) {
-        editor.textarea.text(content);
+        editor.textarea.val(content);
         editor.textarea.trigger('input');
     }
 };
@@ -130,21 +130,35 @@ var actions = {
     compile: function() {
         var lines = editor.textarea.val().trim()
             .replace(/(\r?\n)+/g, '\r\n').split(/\r?\n/);
-        konsole.open().clear();
-        konsole.info('Compiling MyHL code.');
+        konsole.open().clear().info('Compiling MyHL code.');
         var start = (new Date()).valueOf();
         try {
-            compile(lines);
+            var output = compile(lines);
             var end = (new Date()).valueOf();
-            konsole.info('Done after ' + (end - start) + ' seconds.');
+            var time = (end - start) / 1000;
+            konsole.info('Done after ' + time + ' seconds.');
+            return output;
         } catch (e) {
             konsole.error(e.message);
             return false;
         }
-        return true;
     },
     execute: function() {
-
+        var compiled = actions.compile();
+        if (compiled) {
+            setTimeout(function() {
+                konsole.clear().info('Executing MyHL code.');
+                var start = (new Date()).valueOf();
+                try {
+                    execute(compiled);
+                    var end = (new Date()).valueOf();
+                    var time = (end - start) / 1000;
+                    konsole.info('Done after ' + time + ' seconds.');
+                } catch (e) {
+                    konsole.error(e.message);
+                }
+            }, 500);
+        }
     }
 };
 
