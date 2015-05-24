@@ -217,7 +217,7 @@ execute = function(compiled) {
                     i++;
                 }
             } else if (line.type === 'print') {
-                execute_print(variables[line.identifier]);
+                execute_print(line);
                 i++;
             } else {
                 execute_assignment(line);
@@ -257,8 +257,13 @@ execute = function(compiled) {
         }
     }
 
-    function execute_print(variable) {
-        $(document).trigger({ type: 'print', message: variable.value });
+    function execute_print(line) {
+        var variable = variables[line.identifier];
+        if (variable.value != null) {
+            $(document).trigger({ type: 'print', message: variable.value });
+        } else {
+            throw new Error(line.identifier + ' has no value.');
+        }
     }
 
     function execute_assignment(line) {
