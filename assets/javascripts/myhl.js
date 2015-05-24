@@ -16,6 +16,10 @@ var editor = {
                         className: 'operator',
                         begin: /[+*%=-]|(\/(?!\/))/
                     },
+                    {
+                        className: 'datatype',
+                        begin: /\b(number|word)\b/
+                    },
                     hljs.QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_NUMBER_MODE

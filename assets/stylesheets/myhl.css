@@ -235,3 +235,7 @@ main pre {
 .hljs-string {
     color: #ffb454;
 }
+
+.hljs-datatype {
+    color: #7f5340;
+}
