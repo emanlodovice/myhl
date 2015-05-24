@@ -3,6 +3,8 @@ keyword_table = {
     program_statements: ['print', 'read']
 }
 
+reserved_words = ['word', 'number', 'print', 'read', 'use', 'as'];
+
 var ExpressionObj = new Expression();
 
 compile = function(lines) {
@@ -38,7 +40,7 @@ compile = function(lines) {
 
         function is_valid_name(name) {
             name = name.trim();
-            if (name.length === 0) {
+            if (name.length === 0 || $.inArray(name, reserved_words) > -1) {
                 return false;
             }
             if (''+name.charAt(0).match(/[a-z]|[A-Z]|_/) == null) {
