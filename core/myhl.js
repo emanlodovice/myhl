@@ -199,39 +199,65 @@ compile = function(lines) {
     return {variable_table: variable_table, compiled: compiled};
 }
 
+
+var buffer = null;
 execute = function(compiled) {
     var variables = compiled.variable_table;
     var lines = compiled.compiled;
-    for (var i = 0; i < lines.length; i++) {
-        var line = lines[i];
+    var blocked = false;
+    var i = 0;
 
-        if (line.type === 'read') {
-            execute_read(line);
-        } else if (line.type === 'print') {
-            execute_print(variables[line.identifier]);
-        } else {
-            execute_assignment(line);
+    var _t = setInterval(function() {
+        try {
+            var line = lines[i];
+            if (line.type === 'read') {
+                execute_read(line);
+                if (!blocked) {
+                    i++;
+                }
+            } else if (line.type === 'print') {
+                execute_print(variables[line.identifier]);
+                i++;
+            } else {
+                execute_assignment(line);
+                i++;
+            }
+
+            if (i === lines.length) {
+                $(document).trigger({ type: 'done' });
+                clearInterval(_t);
+            }
+        } catch (e) {
+            $(document).trigger({ type: 'error', message: e.message });
+            clearInterval(_t);
         }
-    }
+    }, 1);
 
     function execute_read(line) {
         var variable_name = line.identifier;
         var variable = variables[variable_name];
-
-        var input = prompt('Input ' + variable.type + ':');                     // change prompt here!
-        if (variable.type === 'number') {
-            if (!isNaN(input) && input.length > 0 && +input >= 0 && +input === parseInt(+input)) {
-                variable.value = +input;
-            } else {
-                throw new Error('Type Error: Expected number instead of "' + input + '"');
+        if (blocked) {
+            if (buffer) {
+                if (variable.type === 'number') {
+                    if (!isNaN(buffer) && buffer.length > 0 && +buffer >= 0 && +buffer === parseInt(+buffer)) {
+                        variable.value = +buffer;
+                    } else {
+                        throw new Error('Type Error: Expected number instead of "' + buffer + '"');
+                    }
+                } else {
+                    variable.value = buffer;
+                }
+                buffer = null;
+                blocked = false;
             }
         } else {
-            variable.value = input;
+            $(document).trigger({ type: 'read', variable: variable_name });
+            blocked = true;
         }
     }
 
     function execute_print(variable) {
-        alert(variable.value);                                                  // change alert here!
+        $(document).trigger({ type: 'print', message: variable.value });
     }
 
     function execute_assignment(line) {
@@ -371,7 +397,7 @@ function Expression() {
         var operators = ['^', '*', '/', '%', '+', '-'];
         var tokens = [];
         var operand = '';
-        
+
         for (var i = 0; i < expression.length; i++) {
             var curr = expression[i];
             if (curr !== ' ') {
