@@ -71,7 +71,10 @@ main {
 
 
 main textarea {
-    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: calc(100% - 4rem);
     padding: 1rem;
     font: normal 1.6rem/1.6rem "Consolas", monospace;
     color: #eee;
@@ -81,6 +84,10 @@ main textarea {
     resize: none;
     outline: none;
     -webkit-text-fill-color: transparent;
+}
+
+main textarea.collapsed {
+    bottom: calc(35% + 1rem);
 }
 
 
@@ -175,6 +182,10 @@ main pre {
     color: #f44336;
 }
 
+.console p.input {
+    color: #ff5722;
+}
+
 
 .console input[type="text"] {
     position: absolute;
@@ -187,6 +198,22 @@ main pre {
     padding: 0.5rem 0.7rem;
     border: none;
     outline: none;
+}
+
+
+.console .prompt {
+    position: absolute;
+    left: 0.5rem;
+    bottom: 0.5rem;
+    font: normal 1.6rem/1 "Consolas", monospace;
+    color: #eee;
+    background-color: #ff5722;
+    padding: 0.3rem 0.5rem 0.1rem 0.5rem;
+    border-radius: 0.2rem;
+}
+
+.console .prompt.hidden {
+    display: none;
 }
 
 
@@ -227,4 +254,8 @@ main pre {
 
 .hljs-string {
     color: #ffb454;
+}
+
+.hljs-datatype {
+    color: #7f5340;
 }

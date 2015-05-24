@@ -16,6 +16,10 @@ var editor = {
                         className: 'operator',
                         begin: /[+*%=-]|(\/(?!\/))/
                     },
+                    {
+                        className: 'datatype',
+                        begin: /\b(number|word)\b/
+                    },
                     hljs.QUOTE_STRING_MODE,
                     hljs.C_LINE_COMMENT_MODE,
                     hljs.C_NUMBER_MODE
@@ -39,6 +43,7 @@ var editor = {
         editor.textarea.on('scroll', function(e) {
             editor.highlighted.parent().add(editor.line_numbers)
                 .offset({ top: -e.target.scrollTop + 20 });
+            editor.highlight_line();
         });
     },
     insert_tab: function() {
@@ -77,7 +82,7 @@ var editor = {
         hljs.highlightBlock(editor.highlighted[0]);
     },
     update_content: function(content) {
-        editor.textarea.text(content);
+        editor.textarea.val(content);
         editor.textarea.trigger('input');
     }
 };
@@ -98,6 +103,19 @@ var actions = {
                 actions.execute();
             }
         });
+
+        $(document).on('keydown', function(e) {
+            if (e.keyCode === 79 && e.ctrlKey) {
+                e.preventDefault();
+                actions.open_file();
+            } else if (e.keyCode === 50 && e.ctrlKey) {
+                e.preventDefault();
+                actions.compile();
+            } else if (e.keyCode === 51 && e.ctrlKey) {
+                e.preventDefault();
+                actions.execute();
+            }
+        });
     },
     open_file: function() {
         actions.file.trigger('click');
@@ -112,29 +130,65 @@ var actions = {
     compile: function() {
         var lines = editor.textarea.val().trim()
             .replace(/(\r?\n)+/g, '\r\n').split(/\r?\n/);
-        konsole.open().clear();
-        konsole.info('Compiling MyHL code.');
+        konsole.open().clear().info('Compiling MyHL code.');
         var start = (new Date()).valueOf();
         try {
-            compile(lines);
+            var output = compile(lines);
             var end = (new Date()).valueOf();
-            konsole.info('Done after ' + (end - start) + ' seconds.');
+            var time = (end - start) / 1000;
+            konsole.info('Done after ' + time + ' seconds.');
+            return output;
         } catch (e) {
             konsole.error(e.message);
             return false;
         }
-        return true;
     },
     execute: function() {
+        var compiled = actions.compile();
+        if (compiled) {
+            var start = null;
+            setTimeout(function() {
+                konsole.clear().info('Executing MyHL code.');
+                start = (new Date()).valueOf();
+                try {
+                    execute(compiled);
+                } catch (e) {
+                    konsole.error(e.message);
+                }
+            }, 500);
 
+            $(document).off('read').on('read', function(e) {
+                konsole.prompt('Enter value for "' + e.variable + '":');
+            });
+
+            $(document).off('consoleinput').on('consoleinput', function(e) {
+                buffer = e.value;
+            });
+
+            $(document).off('print').on('print', function(e) {
+                konsole.log(e.message);
+            });
+
+            $(document).off('error').on('error', function(e) {
+                var time = ((new Date()).valueOf() - start) / 1000;
+                konsole.error(e.message);
+                konsole.error('Terminated after ' + time + ' seconds.');
+            });
+
+            $(document).off('done').on('done', function() {
+                var time = ((new Date()).valueOf() - start) / 1000;
+                konsole.info('Done after ' + time + ' seconds.');
+            });
+        }
     }
 };
 
 
 var konsole = {
-    input: $('.console input[type="text"]'),
     container: $('.console'),
     logs: $('.console .logs'),
+    input: $('.console input[type="text"]'),
+    promptdom: $('.console .prompt'),
     template: '<p class="#{type}">#{message}</p>',
     initialize: function() {
         konsole.input.on('keydown', function(e) {
@@ -142,9 +196,14 @@ var konsole = {
                 konsole.close().clear();
             }
         });
+
+        konsole.container.on('mouseup', function() {
+            konsole.input.trigger('focus');
+        });
     },
     open: function() {
         konsole.container.removeClass('hidden');
+        editor.textarea.addClass('collapsed');
         setTimeout(function() {
             konsole.input.trigger('focus');
         }, 150);
@@ -152,6 +211,8 @@ var konsole = {
     },
     close: function() {
         konsole.container.addClass('hidden');
+        editor.textarea.removeClass('collapsed');
+        editor.textarea.trigger('focus');
         return konsole;
     },
     clear: function() {
@@ -170,6 +231,23 @@ var konsole = {
     },
     error: function(message) {
         konsole.log(message, 'error');
+    },
+    prompt: function(message) {
+        konsole.promptdom.text(message).removeClass('hidden');
+        konsole.input.css('text-indent', message.length * 9 + 8 + 'px')
+            .trigger('focus');
+        konsole.input.off('keydown').on('keydown', function(e) {
+            if (e.keyCode === 13) {
+                var message = konsole.promptdom.text() + ' ' + this.value;
+                konsole.log(message, 'input');
+                $(document).trigger({
+                    type: 'consoleinput',
+                    value: konsole.input.val()
+                });
+                konsole.promptdom.addClass('hidden');
+                konsole.input.css('text-indent', 0).val('');
+            }
+        });
     }
 };
 
