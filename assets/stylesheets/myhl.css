@@ -71,7 +71,10 @@ main {
 
 
 main textarea {
-    width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: calc(100% - 4rem);
     padding: 1rem;
     font: normal 1.6rem/1.6rem "Consolas", monospace;
     color: #eee;
@@ -81,6 +84,10 @@ main textarea {
     resize: none;
     outline: none;
     -webkit-text-fill-color: transparent;
+}
+
+main textarea.collapsed {
+    bottom: calc(35% + 1rem);
 }
 
 

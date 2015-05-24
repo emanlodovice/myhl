@@ -39,6 +39,7 @@ var editor = {
         editor.textarea.on('scroll', function(e) {
             editor.highlighted.parent().add(editor.line_numbers)
                 .offset({ top: -e.target.scrollTop + 20 });
+            editor.highlight_line();
         });
     },
     insert_tab: function() {
@@ -145,6 +146,7 @@ var konsole = {
     },
     open: function() {
         konsole.container.removeClass('hidden');
+        editor.textarea.addClass('collapsed');
         setTimeout(function() {
             konsole.input.trigger('focus');
         }, 150);
@@ -152,6 +154,7 @@ var konsole = {
     },
     close: function() {
         konsole.container.addClass('hidden');
+        editor.textarea.removeClass('collapsed');
         return konsole;
     },
     clear: function() {
