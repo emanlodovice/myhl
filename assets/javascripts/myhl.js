@@ -110,7 +110,20 @@ var actions = {
         });
     },
     compile: function() {
-
+        var lines = editor.textarea.val().trim()
+            .replace(/(\r?\n)+/g, '\r\n').split(/\r?\n/);
+        konsole.open().clear();
+        konsole.info('Compiling MyHL code.');
+        var start = (new Date()).valueOf();
+        try {
+            compile(lines);
+            var end = (new Date()).valueOf();
+            konsole.info('Done after ' + (end - start) + ' seconds.');
+        } catch (e) {
+            konsole.error(e.message);
+            return false;
+        }
+        return true;
     },
     execute: function() {
 
@@ -128,9 +141,15 @@ var konsole = {
         setTimeout(function() {
             konsole.input.trigger('focus');
         }, 150);
+        return konsole;
     },
     close: function() {
         konsole.container.addClass('hidden');
+        return konsole;
+    },
+    clear: function() {
+        konsole.logs.empty();
+        return konsole;
     },
     log: function(message, type) {
         type = type || '';
