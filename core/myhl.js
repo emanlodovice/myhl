@@ -3,7 +3,7 @@ keyword_table = {
     program_statements: ['print', 'read']
 }
 
-reserved_words = ['word', 'number', 'print', 'read', 'use', 'as'];
+reserved_words = ['word', 'number', 'print', 'read', 'use', 'as', 'begin', 'vars', 'end', 'statements'];
 
 var ExpressionObj = new Expression();
 
