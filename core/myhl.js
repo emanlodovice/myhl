@@ -3,6 +3,8 @@ keyword_table = {
     program_statements: ['print', 'read']
 }
 
+var ExpressionObj = new Expression();
+
 compile = function(lines) {
     var variable_table = {};
 
@@ -54,7 +56,7 @@ compile = function(lines) {
             result = read_statement(line);
         } else if (is_print_statement(line)) {
             result = print_statement(line);
-        } else if (is_assignment_statement(line)){
+        } else if (is_assignment_statement(line)) {
             result = assignment_statement(line);
         } else {
             throw new Error('Invalid statement! ' + line);
@@ -141,7 +143,7 @@ compile = function(lines) {
         }
 
         function expression_statement(expression) {
-            if (is_word(expression) || is_identifier(expression) || Expression(expression, variable_table)) {
+            if (is_word(expression) || is_identifier(expression) || ExpressionObj.is_valid(expression, variable_table)) {
                 return expression;
             }
             return new Error('Invalid expression: ' + expression);
@@ -206,14 +208,14 @@ execute = function(compiled) {
         } else if (line.type === 'print') {
             execute_print(variables[line.identifier]);
         } else {
-            // execute_assignment
+            execute_assignment(line);
         }
     }
 
     function execute_read(variable) {
-        var input = prompt('Input ' + variable.type + ':'); // change prompt here!
+        var input = prompt('Input ' + variable.type + ':');                     // change prompt here!
         if (variable.type === 'number') {
-            if (!isNaN(input) && input.length > 0) {
+            if (!isNaN(input) && input.length > 0 && +input >= 0 && +input === parseInt(+input)) {
                 variable.value = +input;
             } else {
                 throw new Error('Type Error: Expected number instead of "' + input + '"');
@@ -224,47 +226,86 @@ execute = function(compiled) {
     }
 
     function execute_print(variable) {
-        var to_print = (variable.type === 'number') ? variable.value : "\"" + variable.value + "\"";
-        alert(to_print);    // change alert here!
+        alert(variable.value);                                                  // change alert here!
+    }
+
+    function execute_assignment(line) {
+        var variable = variables[line.identifier];
+        var statement = line.statement;
+
+        if (variable.type === 'word') {
+            if (is_word(statement)) {
+                variable.value = statement;
+            } else if (is_identifier(statement)) {
+                variable.value = variables[statement];
+            } else {
+                throw new Error('Type Error: Expected word value');
+            }
+        } else {
+            var tokens = ExpressionObj.tokenizer(line.statement);
+            var ex = '';
+
+            for (var i = 0; i < tokens.length; i++) {
+                if (tokens[i].type === 'Operand' && is_identifier(tokens[i].value)) {
+                    ex += variables[tokens[i].value].value;
+                } else {
+                    ex += tokens[i].value;
+                }
+            }
+
+            variable.value = eval(ex);
+        }
+    }
+
+    function is_word(line) {
+        return line[0] === '"' && line[line.length-1] === '"';
+    }
+
+    function is_identifier(identifier) {
+        return variables.hasOwnProperty(identifier);
     }
 }
 
-Expression = function(expression, variable_table) {
-    var tokens = tokenizer(expression);
+function Expression() {
+
+    var tokens = null;
     var current = null;
-    console.log(tokens);
-    for (var i = 0; i < tokens.length; i++) {
-        var token = tokens[i];
-        // check if operand values are valid
-        if (token.type === 'Operand' && !is_parens(token.value)) {
-            var regex = /^([a-zA-Z_]\w*|\d+)$/;
-            if (!regex.test(token.value)) {
-                throw new Error('Invalid expression: ' + expression);
+
+    this.is_valid = function(expression, variable_table) {
+        tokens = this.tokenizer(expression);
+        for (var i = 0; i < tokens.length; i++) {
+            var token = tokens[i];
+            // check if operand values are valid
+            if (token.type === 'Operand' && !is_parens(token.value)) {
+                var regex = /^([a-zA-Z_]\w*|\d+)$/;
+                if (!regex.test(token.value)) {
+                    throw new Error('Invalid expression: ' + expression);
+                }
+            }
+            // sets 'next' of each token to the next token
+            if (i < tokens.length - 1) {
+                token.next = tokens[i+1];
+            } else {
+                var end = {'type': 'End', 'value': 'end'};
+                token.next = end;
             }
         }
-        // sets 'next' of each token to the next token
-        if (i < tokens.length - 1) {
-            token.next = tokens[i+1];
-        } else {
-            var end = {'type': 'End', 'value': 'end'};
-            token.next = end;
-        }
-    }
-    tokens.push(end);
+        tokens.push(end);
 
-    // check if non-number operands are declared identifiers
-    for (var i = 0; i < tokens.length; i++) {
-        var curr = tokens[i];
-        var regex = /^\d+$/;
-        if (curr.type === 'Operand' && !regex.test(curr.value)) {
-            if (!variable_table.hasOwnProperty(curr.value)) {
-                throw new Error('Undeclared variable: ' + curr.value);
+        // check if non-number operands are declared identifiers
+        for (var i = 0; i < tokens.length; i++) {
+            var curr = tokens[i];
+            var regex = /^\d+$/;
+            if (curr.type === 'Operand' && !regex.test(curr.value)) {
+                if (!variable_table.hasOwnProperty(curr.value)) {
+                    throw new Error('Undeclared variable: ' + curr.value);
+                }
             }
         }
-    }
 
-    current = tokens[0];
-    return recognizer();
+        current = tokens[0];
+        return recognizer();
+    }
 
     function recognizer() {
         expression_recog();
@@ -310,7 +351,7 @@ Expression = function(expression, variable_table) {
         }
     }
 
-    function tokenizer(expression) {
+    this.tokenizer = function(expression) {
         var operators = ['^', '*', '/', '%', '+', '-'];
         var tokens = [];
         var operand = '';
