@@ -207,6 +207,7 @@ execute = function(compiled) {
     var blocked = false;
     var i = 0;
 
+    buffer = null;
     var _t = setInterval(function() {
         try {
             var line = lines[i];
@@ -245,7 +246,7 @@ execute = function(compiled) {
                         throw new Error('Type Error: Expected number instead of "' + buffer + '"');
                     }
                 } else {
-                    variable.value = buffer;
+                    variable.value = '"' + buffer + '"';
                 }
                 buffer = null;
                 blocked = false;

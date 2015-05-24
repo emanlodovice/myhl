@@ -24,7 +24,7 @@ html {
 
 body {
     height: 100%;
-    font-family: "Consolas", monospace;
+    font-family: "Consolas", "ConsolasRegular", monospace;
     color: #333;
     background-color: #151718;
     overflow: hidden;
@@ -76,7 +76,7 @@ main textarea {
     bottom: 0;
     width: calc(100% - 4rem);
     padding: 1rem;
-    font: normal 1.6rem/1.6rem "Consolas", monospace;
+    font: normal 1.6rem/1.6rem "Consolas", "ConsolasRegular", monospace;
     color: #eee;
     background-color: transparent;
     margin-left: 4rem;
@@ -192,7 +192,7 @@ main pre {
     left: 0;
     bottom: 0;
     width: 100%;
-    font: normal 1.6rem/1 "Consolas", monospace;
+    font: normal 1.6rem/1 "Consolas", "ConsolasRegular", monospace;
     color: #cfd3d7;
     background-color: transparent;
     padding: 0.5rem 0.7rem;
@@ -205,7 +205,7 @@ main pre {
     position: absolute;
     left: 0.5rem;
     bottom: 0.5rem;
-    font: normal 1.6rem/1 "Consolas", monospace;
+    font: normal 1.6rem/1 "Consolas", "ConsolasRegular", monospace;
     color: #eee;
     background-color: #ff5722;
     padding: 0.3rem 0.5rem 0.1rem 0.5rem;
@@ -222,7 +222,7 @@ main pre {
 
 /** VENDOR OVERRIDES **/
 .hljs {
-    font-family: "Consolas", monospace;
+    font-family: "Consolas", "ConsolasRegular", monospace;
     font-size: 1.3rem;
     line-height: 1;
     color: #eee;
