@@ -150,15 +150,19 @@ var actions = {
 
 
 var konsole = {
-    input: $('.console input[type="text"]'),
     container: $('.console'),
     logs: $('.console .logs'),
+    input: $('.console input[type="text"]'),
     template: '<p class="#{type}">#{message}</p>',
     initialize: function() {
         konsole.input.on('keydown', function(e) {
             if (e.keyCode === 27) {
                 konsole.close().clear();
             }
+        });
+
+        konsole.container.on('mouseup', function() {
+            konsole.input.trigger('focus');
         });
     },
     open: function() {
