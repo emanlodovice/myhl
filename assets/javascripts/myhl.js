@@ -23,10 +23,15 @@ var editor = {
             };
         });
 
-        editor.textarea.on('input keydown keyup', function() {
-            editor.update_line_numbers();
-            editor.highlight_line();
-            editor.highlight_code();
+        editor.textarea.on('input keydown keyup', function(e) {
+            if (e.keyCode === 9 && e.type === 'keydown') {
+                e.preventDefault();
+                editor.insert_tab();
+            } else {
+                editor.update_line_numbers();
+                editor.highlight_line();
+                editor.highlight_code();
+            }
         });
 
         editor.textarea.on('mousedown mouseup', editor.highlight_line);
@@ -35,6 +40,18 @@ var editor = {
             editor.line_numbers.offset({ top: -e.target.scrollTop + 20 });
             editor.highlighted.parent().offset({ top: -e.target.scrollTop + 20 });
         });
+    },
+    insert_tab: function() {
+        var textarea = editor.textarea[0];
+        if (textarea.selectionStart !== undefined) {
+            var end = textarea.selectionEnd;
+            textarea.value = textarea.value.slice(0, textarea.selectionStart)
+                + '    ' + textarea.value.slice(end);
+            textarea.selectionStart = end + 4;
+            textarea.selectionEnd = end + 4;
+        } else {
+            textarea.value += '    ';
+        }
     },
     update_line_numbers: function() {
         editor.line_numbers.empty();
