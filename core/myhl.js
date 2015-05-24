@@ -34,7 +34,7 @@ compile = function(lines) {
 
             variable_table[iden] = {
                 'type': type,
-                'value': ''
+                'value': null
             };
         }
 
@@ -217,7 +217,7 @@ execute = function(compiled) {
                     i++;
                 }
             } else if (line.type === 'print') {
-                execute_print(variables[line.identifier]);
+                execute_print(line);
                 i++;
             } else {
                 execute_assignment(line);
@@ -257,8 +257,13 @@ execute = function(compiled) {
         }
     }
 
-    function execute_print(variable) {
-        $(document).trigger({ type: 'print', message: variable.value });
+    function execute_print(line) {
+        var variable = variables[line.identifier];
+        if (variable.value != null) {
+            $(document).trigger({ type: 'print', message: variable.value });
+        } else {
+            throw new Error(line.identifier + ' has no value.');
+        }
     }
 
     function execute_assignment(line) {
@@ -278,21 +283,21 @@ execute = function(compiled) {
             var ex = '';
 
             for (var i = 0; i < tokens.length; i++) {
-                if (tokens[i].type === 'Operand' && is_identifier(tokens[i].value)) {
+                if (tokens[i].type === 'Operand' && is_identifier(tokens[i].value) && variables[tokens[i].value].type === 'number' && variables[tokens[i].value].value != null) {
                     ex += variables[tokens[i].value].value;
                 } else if (!isNaN(tokens[i].value) || tokens[i].type === 'Operator' || is_parens(tokens[i].value)) {
                     ex += tokens[i].value;
                 } else {
-                    throw new Error('Type Error: ' + tokens[i].value);
+                    throw new Error('Type Error: ' + tokens[i].value + ' = ' + variables[tokens[i].value].value);
                 }
             }
 
-            var val = eval(ex);
+            val = parseInt(eval(ex));
             if (val < 0) {
                 throw new Error('Invalid Number: ' + val);
             }
 
-            variable.value = eval(ex);
+            variable.value = val;
         }
     }
 

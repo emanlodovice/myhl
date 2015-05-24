@@ -130,6 +130,7 @@ var actions = {
     compile: function() {
         var lines = editor.textarea.val().trim()
             .replace(/(\r?\n)+/g, '\r\n').split(/\r?\n/);
+        konsole.reset_prompt();
         konsole.open().clear().info('Compiling MyHL code.');
         var start = (new Date()).valueOf();
         try {
@@ -244,10 +245,13 @@ var konsole = {
                     type: 'consoleinput',
                     value: konsole.input.val()
                 });
-                konsole.promptdom.addClass('hidden');
-                konsole.input.css('text-indent', 0).val('');
+                konsole.reset_prompt();
             }
         });
+    },
+    reset_prompt: function() {
+        konsole.promptdom.addClass('hidden');
+        konsole.input.css('text-indent', 0).val('').off('keydown');
     }
 };
 
