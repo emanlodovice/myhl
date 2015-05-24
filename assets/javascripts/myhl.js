@@ -120,8 +120,18 @@ var actions = {
 
 var konsole = {
     input: $('.console input[type="text"]'),
+    container: $('.console'),
     logs: $('.console .logs'),
     template: '<p class="#{type}">#{message}</p>',
+    open: function() {
+        konsole.container.removeClass('hidden');
+        setTimeout(function() {
+            konsole.input.trigger('focus');
+        }, 150);
+    },
+    close: function() {
+        konsole.container.addClass('hidden');
+    },
     log: function(message, type) {
         type = type || '';
         var log = konsole.template.replace(/#\{message\}/g, message)
