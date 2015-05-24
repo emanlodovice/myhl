@@ -41,7 +41,7 @@ compile = function(lines) {
             if (name.length === 0) {
                 return false;
             }
-            if (name.charAt(0).match(/[a-z]|[A-Z]|_/i) === null) {
+            if (''+name.charAt(0).match(/[a-z]|[A-Z]|_/) == null) {
                 return false;
             }
             return name.match(/[a-z]|[A-Z]|[0-9]|_/g).length === name.length;
@@ -248,9 +248,16 @@ execute = function(compiled) {
             for (var i = 0; i < tokens.length; i++) {
                 if (tokens[i].type === 'Operand' && is_identifier(tokens[i].value)) {
                     ex += variables[tokens[i].value].value;
-                } else {
+                } else if (!isNaN(tokens[i].value) || tokens[i].type === 'Operator' || is_parens(tokens[i].value)) {
                     ex += tokens[i].value;
+                } else {
+                    throw new Error('Type Error: ' + tokens[i].value);
                 }
+            }
+
+            var val = eval(ex);
+            if (val < 0) {
+                throw new Error('Invalid Number: ' + val);
             }
 
             variable.value = eval(ex);
@@ -263,6 +270,10 @@ execute = function(compiled) {
 
     function is_identifier(identifier) {
         return variables.hasOwnProperty(identifier);
+    }
+
+    function is_parens(input) {
+        return input === '(' || input === ')';
     }
 }
 
@@ -296,7 +307,7 @@ function Expression() {
         for (var i = 0; i < tokens.length; i++) {
             var curr = tokens[i];
             var regex = /^\d+$/;
-            if (curr.type === 'Operand' && !regex.test(curr.value)) {
+            if (curr.type === 'Operand' && !regex.test(curr.value) && !is_parens(curr.value)) {
                 if (!variable_table.hasOwnProperty(curr.value)) {
                     throw new Error('Undeclared variable: ' + curr.value);
                 }
