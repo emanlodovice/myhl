@@ -18,7 +18,7 @@ compile = function(lines) {
 
         var type = parts[1].trim();
         if ($.inArray(type, keyword_table.data_types) === -1) {
-            throw new Error('Invalid data type ' + type + '!');
+            throw new Error('Invalid data type: ' + type);
         }
 
         var identifiers = parts[0].split(',');
@@ -26,10 +26,10 @@ compile = function(lines) {
         for (var i in identifiers) {
             var iden = identifiers[i].trim();
             if (!is_valid_name(iden)) {
-                throw new Error('Invalid identifier ' + iden + '!');
+                throw new Error('Invalid identifier: ' + iden);
             }
             if (variable_table.hasOwnProperty(iden)) {
-                throw new Error('Identifier ' + iden + ' was declared more than ones!')
+                throw new Error('Identifier was declared more than ones: ' + iden);
             }
 
             variable_table[iden] = {
