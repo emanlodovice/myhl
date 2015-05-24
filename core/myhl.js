@@ -18,7 +18,7 @@ compile = function(lines) {
 
         var type = parts[1].trim();
         if ($.inArray(type, keyword_table.data_types) === -1) {
-            throw new Error('Invalid data type: ' + type);
+            throw new Error('Invalid datatype: ' + type);
         }
 
         var identifiers = parts[0].split(',');
