@@ -243,7 +243,7 @@ execute = function(compiled) {
                     if (!isNaN(buffer) && buffer.length > 0 && +buffer >= 0 && +buffer === parseInt(+buffer)) {
                         variable.value = +buffer;
                     } else {
-                        throw new Error('Type Error: Expected number instead of "' + buffer + '"');
+                        throw new Error('Invalid data type: Expected number instead of "' + buffer + '"');
                     }
                 } else {
                     variable.value = '"' + buffer + '"';
@@ -262,7 +262,7 @@ execute = function(compiled) {
         if (variable.value != null) {
             $(document).trigger({ type: 'print', message: variable.value });
         } else {
-            throw new Error(line.identifier + ' has no value.');
+            throw new Error('Variable has no value: ' + line.identifier);
         }
     }
 
@@ -273,10 +273,10 @@ execute = function(compiled) {
         if (variable.type === 'word') {
             if (is_word(statement)) {
                 variable.value = statement;
-            } else if (is_identifier(statement)) {
+            } else if (is_identifier(statement) && variables[statement].type === 'word') {
                 variable.value = variables[statement];
             } else {
-                throw new Error('Type Error: Expected word value');
+                throw new Error('Invalid data type: Expected word value');
             }
         } else {
             var tokens = ExpressionObj.tokenizer(line.statement);
@@ -288,7 +288,7 @@ execute = function(compiled) {
                 } else if (!isNaN(tokens[i].value) || tokens[i].type === 'Operator' || is_parens(tokens[i].value)) {
                     ex += tokens[i].value;
                 } else {
-                    throw new Error('Type Error: ' + tokens[i].value + ' = ' + variables[tokens[i].value].value);
+                    throw new Error('Invalid data type: ' + tokens[i].value + ' = ' + variables[tokens[i].value].value);
                 }
             }
 
