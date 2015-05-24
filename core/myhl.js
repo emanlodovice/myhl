@@ -39,7 +39,7 @@ compile = function(lines) {
             if (name.length === 0) {
                 return false;
             }
-            if (''+name.charAt(0).match(/[a-z]|[A-Z]|_/) == null) {
+            if (name.charAt(0).match(/[a-z]|[A-Z]|_/i) === null) {
                 return false;
             }
             return name.match(/[a-z]|[A-Z]|[0-9]|_/g).length === name.length;
@@ -57,7 +57,7 @@ compile = function(lines) {
         } else if (is_assignment_statement(line)){
             result = assignment_statement(line);
         } else {
-            throw new Error('Invalid statement!');
+            throw new Error('Invalid statement! ' + line);
         }
         return result;
 
@@ -141,7 +141,7 @@ compile = function(lines) {
         }
 
         function expression_statement(expression) {
-            if (is_word(expression) || is_identifier(expression) || Expression(expression)) {
+            if (is_word(expression) || is_identifier(expression) || Expression(expression, variable_table)) {
                 return expression;
             }
             return new Error('Invalid expression: ' + expression);
@@ -173,6 +173,11 @@ compile = function(lines) {
             if ((line == 'end vars' && status === 'vars') || (line == 'end statements' && status === 'statements')) {
                 status = null;
             }   else {
+                var last_char = line.charAt(line.length - 1);
+                if (last_char != ';') {
+                    throw new Error('Statements should end with \';\'');
+                }
+                line = line.substring(0, line.length - 1);
                 if (status === 'vars') {
                     parse_declaration(line);
                 } else if (status === 'statements') {
@@ -224,7 +229,7 @@ execute = function(compiled) {
     }
 }
 
-Expression = function(expression) {
+Expression = function(expression, variable_table) {
     var tokens = tokenizer(expression);
     var current = null;
     console.log(tokens);
@@ -246,6 +251,18 @@ Expression = function(expression) {
         }
     }
     tokens.push(end);
+
+    // check if non-number operands are declared identifiers
+    for (var i = 0; i < tokens.length; i++) {
+        var curr = tokens[i];
+        var regex = /^\d+$/;
+        if (curr.type === 'Operand' && !regex.test(curr.value)) {
+            if (!variable_table.hasOwnProperty(curr.value)) {
+                throw new Error('Undeclared variable: ' + curr.value);
+            }
+        }
+    }
+
     current = tokens[0];
     return recognizer();
 
