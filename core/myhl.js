@@ -206,7 +206,7 @@ execute = function(compiled) {
         var line = lines[i];
 
         if (line.type === 'read') {
-            execute_read(variables[line.identifier]);
+            execute_read(line);
         } else if (line.type === 'print') {
             execute_print(variables[line.identifier]);
         } else {
@@ -214,7 +214,10 @@ execute = function(compiled) {
         }
     }
 
-    function execute_read(variable) {
+    function execute_read(line) {
+        var variable_name = line.identifier;
+        var variable = variables[variable_name];
+
         var input = prompt('Input ' + variable.type + ':');                     // change prompt here!
         if (variable.type === 'number') {
             if (!isNaN(input) && input.length > 0 && +input >= 0 && +input === parseInt(+input)) {
