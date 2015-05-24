@@ -49,12 +49,13 @@ compile = function(lines) {
 
     parse_statement = function(line) {
         var result = null;
+        line = line.trim();
         if (is_read_statement(line)) {
             result = read_statement(line);
         } else if (is_print_statement(line)) {
             result = print_statement(line);
         } else if (is_assignment_statement(line)){
-            result = 'assignment';
+            result = assignment_statement(line);
         } else {
             throw new Error('Invalid statement!');
         }
@@ -93,7 +94,14 @@ compile = function(lines) {
         }
 
         function is_word(line) {
-            return true;
+            if (line.length < 2) {
+                return false;
+            } else {
+                if (line[0] === '"' && line[line.length - 1] === '"') {
+                    return true
+                }
+                return false;
+            }
         }
 
         function read_statement(line) {
@@ -129,6 +137,7 @@ compile = function(lines) {
             var iden = statement[0].trim();
             var expression = statement[1].trim();
             var result = expression_statement(expression);
+            return {'type': 'assignment', 'identifier': iden, 'statement': result};
         }
 
         function expression_statement(expression) {
