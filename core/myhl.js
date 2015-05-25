@@ -206,6 +206,10 @@ execute = function(compiled) {
     var lines = compiled.compiled;
     var blocked = false;
     var i = 0;
+    if (lines.length == 0) {
+        $(document).trigger({ type: 'done' });
+        return;
+    }
 
     buffer = null;
     var _t = setInterval(function() {
