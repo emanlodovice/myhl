@@ -128,8 +128,9 @@ var actions = {
         });
     },
     compile: function() {
-        var lines = editor.textarea.val().trim()
+        var lines = editor.textarea.val().trim().replace(/ *\/\/.*/g, '\r\n')
             .replace(/(\r?\n)+/g, '\r\n').split(/\r?\n/);
+        console.log(lines);
         konsole.reset_prompt();
         konsole.open().clear().info('Compiling MyHL code.');
         var start = (new Date()).valueOf();
