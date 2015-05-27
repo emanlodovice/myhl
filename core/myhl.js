@@ -1,9 +1,10 @@
 keyword_table = {
     data_types: ['word', 'number'],
     program_statements: ['print', 'read']
-}
+};
 
-reserved_words = ['word', 'number', 'print', 'read', 'use', 'as', 'begin', 'vars', 'end', 'statements'];
+reserved_words = ['word', 'number', 'print', 'read', 'use', 'as',
+    'begin', 'vars', 'end', 'statements'];
 
 var ExpressionObj = new Expression();
 
@@ -145,7 +146,8 @@ compile = function(lines) {
         }
 
         function expression_statement(expression) {
-            if (is_word(expression) || is_identifier(expression) || ExpressionObj.is_valid(expression, variable_table)) {
+            if (is_word(expression) || is_identifier(expression)
+                    || ExpressionObj.is_valid(expression, variable_table)) {
                 return expression;
             }
             return new Error('Invalid expression: ' + expression);
@@ -161,20 +163,23 @@ compile = function(lines) {
         if (status === null) {
             if (i == 0) {
                 if (line != 'begin vars') {
-                    throw new Error('Invalid start!'); // di ko kabalo unsa dapat ang error.. hehe
+                    // di ko kabalo unsa dapat ang error.. hehe
+                    throw new Error('Invalid start!');
                 } else {
                     status = 'vars';
                 }
             } else {
                 if (line != 'begin statements' || has_statement_block) {
-                    throw new Error('Invalid block!'); // di napud ko sure unsa dapat ang error.
+                    // di napud ko sure unsa dapat ang error.
+                    throw new Error('Invalid block!');
                 }   else {
                     status = 'statements';
                     has_statement_block = true;
                 }
             }
         } else {
-            if ((line == 'end vars' && status === 'vars') || (line == 'end statements' && status === 'statements')) {
+            if ((line == 'end vars' && status === 'vars')
+                    || (line == 'end statements' && status === 'statements')) {
                 status = null;
             }   else {
                 var last_char = line.charAt(line.length - 1);
@@ -244,7 +249,8 @@ execute = function(compiled) {
         if (blocked) {
             if (buffer) {
                 if (variable.type === 'number') {
-                    if (!isNaN(buffer) && buffer.length > 0 && +buffer >= 0 && +buffer === parseInt(+buffer)) {
+                    if (!isNaN(buffer) && buffer.length > 0 && +buffer >= 0
+                            && +buffer === parseInt(+buffer)) {
                         variable.value = +buffer;
                     } else {
                         throw new Error('Invalid data type: Expected number instead of "' + buffer + '"');
@@ -277,7 +283,8 @@ execute = function(compiled) {
         if (variable.type === 'word') {
             if (is_word(statement)) {
                 variable.value = statement;
-            } else if (is_identifier(statement) && variables[statement].type === 'word') {
+            } else if (is_identifier(statement)
+                    && variables[statement].type === 'word') {
                 variable.value = variables[statement];
             } else {
                 throw new Error('Invalid data type: Expected word value');
@@ -287,9 +294,14 @@ execute = function(compiled) {
             var ex = '';
 
             for (var i = 0; i < tokens.length; i++) {
-                if (tokens[i].type === 'Operand' && is_identifier(tokens[i].value) && variables[tokens[i].value].type === 'number' && variables[tokens[i].value].value != null) {
+                if (tokens[i].type === 'Operand'
+                        && is_identifier(tokens[i].value)
+                        && variables[tokens[i].value].type === 'number'
+                        && variables[tokens[i].value].value != null) {
                     ex += variables[tokens[i].value].value;
-                } else if (!isNaN(tokens[i].value) || tokens[i].type === 'Operator' || is_parens(tokens[i].value)) {
+                } else if (!isNaN(tokens[i].value)
+                        || tokens[i].type === 'Operator'
+                        || is_parens(tokens[i].value)) {
                     ex += tokens[i].value;
                 } else {
                     throw new Error('Invalid data type: ' + tokens[i].value + ' = ' + variables[tokens[i].value].value);
@@ -348,7 +360,8 @@ function Expression() {
         for (var i = 0; i < tokens.length; i++) {
             var curr = tokens[i];
             var regex = /^\d+$/;
-            if (curr.type === 'Operand' && !regex.test(curr.value) && !is_parens(curr.value)) {
+            if (curr.type === 'Operand' && !regex.test(curr.value)
+                    && !is_parens(curr.value)) {
                 if (!variable_table.hasOwnProperty(curr.value)) {
                     throw new Error('Undeclared variable: ' + curr.value);
                 }
